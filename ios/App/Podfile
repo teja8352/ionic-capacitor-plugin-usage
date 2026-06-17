@@ -1,0 +1,35 @@
+require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
+
+platform :ios, '16.0'
+use_frameworks!
+
+install! 'cocoapods', :disable_input_output_paths => true
+
+# ── Mitek MiSnap CocoaPods source ──────────────────────────────────────────
+# Add your Mitek private spec repo or GitHub Packages source here, e.g.:
+#   source 'https://github.com/Mitek-Systems/MiSnap-iOS-Specs.git'
+# ─────────────────────────────────────────────────────────────────────────
+source 'https://cdn.cocoapods.org/'
+
+def capacitor_pods
+  pod 'Capacitor',        :path => '../../node_modules/@capacitor/ios'
+  pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
+  pod 'CapacitorApp',     :path => '../../node_modules/@capacitor/app'
+  pod 'CapacitorHaptics', :path => '../../node_modules/@capacitor/haptics'
+  pod 'CapacitorKeyboard',:path => '../../node_modules/@capacitor/keyboard'
+  pod 'CapacitorStatusBar',:path => '../../node_modules/@capacitor/status-bar'
+  pod 'capacitor-mitek-sdk', :path => '../../node_modules/capacitor-mitek-sdk'
+end
+
+target 'App' do
+  capacitor_pods
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
+    end
+  end
+end

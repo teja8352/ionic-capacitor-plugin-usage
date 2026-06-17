@@ -1,0 +1,102 @@
+PODS:
+  - Capacitor (8.4.0):
+    - CapacitorCordova
+  - capacitor-mitek-sdk (1.0.0):
+    - Capacitor
+    - MiSnap
+    - MiSnapCore
+    - MiSnapFacialCapture
+    - MiSnapFacialCaptureUX
+    - MiSnapNFC
+    - MiSnapNFCUX
+    - MiSnapUX
+    - MiSnapVoiceCapture
+    - MiSnapVoiceCaptureUX
+  - CapacitorApp (8.1.0):
+    - Capacitor
+  - CapacitorCordova (8.4.0)
+  - CapacitorHaptics (8.0.2):
+    - Capacitor
+  - CapacitorKeyboard (8.0.5):
+    - Capacitor
+  - CapacitorStatusBar (8.0.2):
+    - Capacitor
+  - MiSnap (5.11.1):
+    - MiSnapCore (= 5.11.1)
+  - MiSnapAssetManager (5.11.1)
+  - MiSnapCore (5.11.1)
+  - MiSnapFacialCapture (5.11.1):
+    - MiSnapCore (= 5.11.1)
+  - MiSnapFacialCaptureUX (5.11.1):
+    - MiSnapAssetManager (= 5.11.1)
+  - MiSnapNFC (5.11.1):
+    - MiSnapCore (= 5.11.1)
+  - MiSnapNFCUX (5.11.1):
+    - MiSnapAssetManager (= 5.11.1)
+  - MiSnapUX (5.11.1):
+    - MiSnapAssetManager (= 5.11.1)
+  - MiSnapVoiceCapture (5.11.1):
+    - MiSnapCore (= 5.11.1)
+  - MiSnapVoiceCaptureUX (5.11.1):
+    - MiSnapAssetManager (= 5.11.1)
+
+DEPENDENCIES:
+  - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - capacitor-mitek-sdk (from `../../node_modules/capacitor-mitek-sdk`)
+  - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
+  - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
+  - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
+  - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
+
+SPEC REPOS:
+  trunk:
+    - MiSnap
+    - MiSnapAssetManager
+    - MiSnapCore
+    - MiSnapFacialCapture
+    - MiSnapFacialCaptureUX
+    - MiSnapNFC
+    - MiSnapNFCUX
+    - MiSnapUX
+    - MiSnapVoiceCapture
+    - MiSnapVoiceCaptureUX
+
+EXTERNAL SOURCES:
+  Capacitor:
+    :path: "../../node_modules/@capacitor/ios"
+  capacitor-mitek-sdk:
+    :path: "../../node_modules/capacitor-mitek-sdk"
+  CapacitorApp:
+    :path: "../../node_modules/@capacitor/app"
+  CapacitorCordova:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorHaptics:
+    :path: "../../node_modules/@capacitor/haptics"
+  CapacitorKeyboard:
+    :path: "../../node_modules/@capacitor/keyboard"
+  CapacitorStatusBar:
+    :path: "../../node_modules/@capacitor/status-bar"
+
+SPEC CHECKSUMS:
+  Capacitor: 8273022511838f32d2b245105fdee086195b1304
+  capacitor-mitek-sdk: ae3b13a5e3c7a624af6d67f2df3e0bad416f67d1
+  CapacitorApp: a4d8d936cc4390859a3766f141048abe55d4076f
+  CapacitorCordova: 71d81f350e6c30bf2a846593b5c480fbd68e9bac
+  CapacitorHaptics: 4e1e84c2b74fb5918e403fb8f0e73a07d05937df
+  CapacitorKeyboard: b7df6f45f1072c292d7de8688aa98b9b266b37fe
+  CapacitorStatusBar: b692a4cf12b3fe3a7b7ece86da62106065d78fdc
+  MiSnap: d338f0eced84025185cdf01b5f122368bbc85b53
+  MiSnapAssetManager: 8c6acfd0f4073a36a10ce8ef3b18099d1cea13c0
+  MiSnapCore: a380aa0d5a3996ebdbe7b4c6c5f100203e32c34f
+  MiSnapFacialCapture: 8bd842ed1979ed41313f0e8591be133e61889e40
+  MiSnapFacialCaptureUX: 2d72bf041fa8528ce2afd08b7c4b9fcc6f478833
+  MiSnapNFC: a45d0c96630dafdafa6995d4e9ab21dc58eaa4f7
+  MiSnapNFCUX: 04cafa2ce1ccfc013c8a503ab830a1ee04cad14e
+  MiSnapUX: 5251f3b1a5dcc9ce886b694a4d8f61f7dbdbe98e
+  MiSnapVoiceCapture: 889b7c2c9b0c2c2a76bb0ccd9dd7e305ffe6a6ee
+  MiSnapVoiceCaptureUX: 58bdbadbe2c46d280db60bd60cf0f11b0ac9823b
+
+PODFILE CHECKSUM: dcf2b3bd120815d52e2350c2012bcff5fbac1a37
+
+COCOAPODS: 1.16.2

@@ -1,0 +1,572 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Mitek SDK</ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-item lines="none">
+      <ion-icon name="key-outline" slot="start" color="medium"></ion-icon>
+      <ion-input
+        label="License Key"
+        labelPlacement="floating"
+        placeholder="Paste your Mitek license key"
+        [(ngModel)]="license"
+        clearInput
+        type="password"
+      ></ion-input>
+    </ion-item>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="activeTab" scrollable>
+      <ion-segment-button value="document" (click)="setTab('document')">
+        <ion-icon name="id-card-outline"></ion-icon>
+        <ion-label>Doc</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="face" (click)="setTab('face')">
+        <ion-icon name="person-outline"></ion-icon>
+        <ion-label>Face</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="barcode" (click)="setTab('barcode')">
+        <ion-icon name="barcode-outline"></ion-icon>
+        <ion-label>Barcode</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="voice" (click)="setTab('voice')">
+        <ion-icon name="mic-outline"></ion-icon>
+        <ion-label>Voice</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="nfc" (click)="setTab('nfc')">
+        <ion-icon name="wifi-outline"></ion-icon>
+        <ion-label>NFC</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="permissions" (click)="setTab('permissions')">
+        <ion-icon name="key-outline"></ion-icon>
+        <ion-label>Perms</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="logs" (click)="setTab('logs')">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <ion-label>Logs</ion-label>
+        @if (logs.length > 0) {
+        <ion-badge color="primary">{{ logs.length }}</ion-badge>
+        }
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- DOCUMENT SESSION -->
+  @if (activeTab === 'document') {
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Document Session</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-select
+          label="Document Type"
+          [(ngModel)]="documentType"
+          interface="action-sheet"
+        >
+          @for (type of documentTypes; track type) {
+          <ion-select-option [value]="type">{{ type }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+
+      <ion-button
+        expand="block"
+        class="ion-margin-top"
+        [disabled]="loading"
+        (click)="runDocumentSession()"
+      >
+        @if (loading) {
+        <ion-spinner name="crescent" slot="start"></ion-spinner> } Scan Document
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ng-container *ngTemplateOutlet="resultCard"></ng-container>
+  }
+
+  <!-- FACE SESSION -->
+  @if (activeTab === 'face') {
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Face Session</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p class="ion-text-center ion-padding-bottom">
+        Capture a live selfie for face biometric verification.
+      </p>
+      <ion-button
+        expand="block"
+        [disabled]="loading"
+        (click)="runFaceSession()"
+      >
+        @if (loading) {
+        <ion-spinner name="crescent" slot="start"></ion-spinner> } Start Face
+        Capture
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  @if (result?.imageBase64) {
+  <ion-card>
+    <ion-card-header
+      ><ion-card-title>Captured Image</ion-card-title></ion-card-header
+    >
+    <ion-card-content>
+      <img
+        [src]="'data:image/jpeg;base64,' + result!.imageBase64"
+        alt="Face capture"
+        class="result-image"
+      />
+    </ion-card-content>
+  </ion-card>
+  }
+
+  <ng-container *ngTemplateOutlet="resultCard"></ng-container>
+  }
+
+  <!-- BARCODE SESSION -->
+  @if (activeTab === 'barcode') {
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Barcode Session</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p class="ion-text-center ion-padding-bottom">
+        Scan a barcode (PDF417, QR code, VDS, etc.)
+      </p>
+      <ion-button
+        expand="block"
+        [disabled]="loading"
+        (click)="runBarcodeSession()"
+      >
+        @if (loading) {
+        <ion-spinner name="crescent" slot="start"></ion-spinner> } Scan Barcode
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  @if (result?.barcode) {
+  <ion-card>
+    <ion-card-header
+      ><ion-card-title>Barcode Data</ion-card-title></ion-card-header
+    >
+    <ion-card-content>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-label>
+            <p>Type</p>
+            <h3>{{ result!.barcode!.type ?? '—' }}</h3>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <p>VDS</p>
+            <h3>{{ result!.barcode!.isVds ? 'Yes' : 'No' }}</h3>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <p>Encoded Data</p>
+            <ion-note class="barcode-data"
+              >{{ result!.barcode!.encodedBarcode ?? '—' }}</ion-note
+            >
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  }
+
+  <ng-container *ngTemplateOutlet="resultCard"></ng-container>
+  }
+
+  <!-- VOICE SESSION -->
+  @if (activeTab === 'voice') {
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Voice Session</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-input
+          label="Phrase (optional)"
+          placeholder="e.g. My voice is my password"
+          [(ngModel)]="voicePhrase"
+          labelPlacement="floating"
+          clearInput
+        ></ion-input>
+      </ion-item>
+      <ion-note class="ion-padding-start"
+        >Leave blank to use the SDK default phrase.</ion-note
+      >
+
+      <ion-button
+        expand="block"
+        class="ion-margin-top"
+        [disabled]="loading"
+        (click)="runVoiceSession()"
+      >
+        @if (loading) {
+        <ion-spinner name="crescent" slot="start"></ion-spinner> } Start Voice
+        Capture
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  @if (result?.phrase) {
+  <ion-card>
+    <ion-card-header
+      ><ion-card-title>Voice Result</ion-card-title></ion-card-header
+    >
+    <ion-card-content>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-label>
+            <p>Phrase Used</p>
+            <h3>{{ result!.phrase }}</h3>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <p>Sample Count</p>
+            <h3>{{ result!.voiceSampleCount ?? '—' }}</h3>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  }
+
+  <ng-container *ngTemplateOutlet="resultCard"></ng-container>
+  }
+
+  <!-- NFC SESSION -->
+  @if (activeTab === 'nfc') {
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>NFC Session</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-note class="ion-margin-bottom ion-display-block">
+        Provide MRZ lines OR individual document fields to read the NFC chip.
+      </ion-note>
+
+      <ion-list lines="full">
+        <ion-item>
+          <ion-input
+            label="MRZ Line 1"
+            placeholder="P&lt;UTOERIKSSON&lt;&lt;..."
+            [(ngModel)]="nfcMrzLine1"
+            labelPlacement="floating"
+            clearInput
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            label="MRZ Line 2"
+            placeholder="L898902C<..."
+            [(ngModel)]="nfcMrzLine2"
+            labelPlacement="floating"
+            clearInput
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            label="MRZ Line 3 (optional)"
+            placeholder="ERIKSSON&lt;&lt;ANNA..."
+            [(ngModel)]="nfcMrzLine3"
+            labelPlacement="floating"
+            clearInput
+          ></ion-input>
+        </ion-item>
+
+        <ion-list-header>
+          <ion-label color="medium">— or fill individual fields —</ion-label>
+        </ion-list-header>
+
+        <ion-item>
+          <ion-input
+            label="Document Number"
+            placeholder="L898902C"
+            [(ngModel)]="nfcDocumentNumber"
+            labelPlacement="floating"
+            clearInput
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            label="Date of Birth (YYMMDD)"
+            placeholder="690806"
+            [(ngModel)]="nfcDateOfBirth"
+            labelPlacement="floating"
+            clearInput
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            label="Date of Expiry (YYMMDD)"
+            placeholder="940623"
+            [(ngModel)]="nfcDateOfExpiry"
+            labelPlacement="floating"
+            clearInput
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            label="Country"
+            placeholder="UTO"
+            [(ngModel)]="nfcCountry"
+            labelPlacement="floating"
+            clearInput
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            label="Document Code"
+            placeholder="P"
+            [(ngModel)]="nfcDocumentCode"
+            labelPlacement="floating"
+            clearInput
+          ></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-button
+        expand="block"
+        class="ion-margin-top"
+        [disabled]="loading"
+        (click)="runNfcSession()"
+      >
+        @if (loading) {
+        <ion-spinner name="crescent" slot="start"></ion-spinner> } Read NFC Chip
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  @if (result?.nfcData) {
+  <ion-card>
+    <ion-card-header
+      ><ion-card-title>NFC Chip Data</ion-card-title></ion-card-header
+    >
+    <ion-card-content>
+      <ion-list lines="none">
+        @for (field of [ ['Chip Type', result!.nfcData!.chipType], ['Document
+        Number', result!.nfcData!.documentNumber], ['Document Code',
+        result!.nfcData!.documentCode], ['First Name',
+        result!.nfcData!.firstName], ['Last Name', result!.nfcData!.lastName],
+        ['Gender', result!.nfcData!.gender], ['Nationality',
+        result!.nfcData!.nationality], ['Issuing Country',
+        result!.nfcData!.issuingCountry], ['Date of Birth',
+        result!.nfcData!.dateOfBirth], ['Date of Expiry',
+        result!.nfcData!.dateOfExpiry], ['Date of Issue',
+        result!.nfcData!.dateOfIssue], ['Personal Number',
+        result!.nfcData!.personalNumber], ['Place of Birth',
+        result!.nfcData!.placeOfBirth], ['Chip Auth',
+        result!.nfcData!.chipAuthInfo], ['Active Auth',
+        result!.nfcData!.activeAuthInfo] ]; track $index) { @if (field[1]) {
+        <ion-item>
+          <ion-label>
+            <p>{{ field[0] }}</p>
+            <h3>{{ field[1] }}</h3>
+          </ion-label>
+        </ion-item>
+        } } @if (result!.nfcData!.vehicleCategories?.length) {
+        <ion-item>
+          <ion-label>
+            <p>Vehicle Categories</p>
+            <h3>{{ result!.nfcData!.vehicleCategories!.join(', ') }}</h3>
+          </ion-label>
+        </ion-item>
+        }
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  }
+
+  <ng-container *ngTemplateOutlet="resultCard"></ng-container>
+  }
+
+  <!-- PERMISSIONS -->
+  @if (activeTab === 'permissions') {
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Permission Status</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button
+              expand="block"
+              fill="outline"
+              [disabled]="loading"
+              (click)="checkPermissions()"
+            >
+              @if (loading) {
+              <ion-spinner name="crescent" slot="start"></ion-spinner> } Check
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button
+              expand="block"
+              [disabled]="loading"
+              (click)="requestAllPermissions()"
+            >
+              @if (loading) {
+              <ion-spinner name="crescent" slot="start"></ion-spinner> } Request
+              All
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      @if (permissions) {
+      <ion-list class="ion-margin-top">
+        @for (perm of [ ['Camera', permissions.camera], ['Audio / Mic',
+        permissions.audio], ['NFC', permissions.nfc] ]; track $index) {
+        <ion-item>
+          <ion-label>{{ perm[0] }}</ion-label>
+          <ion-chip [color]="permissionColor(perm[1])" slot="end">
+            {{ perm[1] }}
+          </ion-chip>
+        </ion-item>
+        }
+      </ion-list>
+      }
+    </ion-card-content>
+  </ion-card>
+  }
+
+  <!-- LOGS -->
+  @if (activeTab === 'logs') {
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        Session Logs
+        <ion-button fill="clear" size="small" slot="end" (click)="clearLogs()">
+          <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      @if (logs.length === 0) {
+      <p class="ion-text-center ion-padding" color="medium">
+        No logs yet — run a session to see activity.
+      </p>
+      } @else {
+      <ion-list lines="full">
+        @for (entry of logs; track $index) {
+        <ion-item>
+          <ion-chip [color]="logLevelColor(entry.level)" slot="start">
+            {{ entry.level }}
+          </ion-chip>
+          <ion-label class="ion-text-wrap">
+            <p class="log-time">{{ entry.timestamp | date:'HH:mm:ss.SSS' }}</p>
+            <h3>{{ entry.message }}</h3>
+            @if (entry.data) {
+            <ion-note class="log-data">{{ entry.data | json }}</ion-note>
+            }
+          </ion-label>
+        </ion-item>
+        }
+      </ion-list>
+      }
+    </ion-card-content>
+  </ion-card>
+  }
+
+  <!-- Shared Result Template -->
+  <ng-template #resultCard>
+    @if (result) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon
+            [name]="result.success ? 'checkmark-circle-outline' : 'close-circle-outline'"
+            [color]="result.success ? 'success' : 'danger'"
+            style="vertical-align: middle; margin-right: 6px"
+          >
+          </ion-icon>
+          {{ result.success ? 'Success' : 'Failed' }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        @if (!result.success) {
+        <ion-item color="light" lines="none">
+          <ion-icon
+            name="warning-outline"
+            slot="start"
+            color="danger"
+          ></ion-icon>
+          <ion-label>
+            <h3>{{ result.errorCode }}</h3>
+            <p>{{ result.errorMessage }}</p>
+          </ion-label>
+        </ion-item>
+        } @if (result.extractedData) {
+        <ion-list-header
+          ><ion-label>Extracted Document Data</ion-label></ion-list-header
+        >
+        <ion-list lines="none">
+          @for (field of [ ['First Name', result.extractedData.firstName],
+          ['Surname', result.extractedData.surname], ['Sex',
+          result.extractedData.sex], ['Date of Birth',
+          result.extractedData.dateOfBirth], ['Date of Expiry',
+          result.extractedData.dateOfExpiry], ['Nationality',
+          result.extractedData.nationality], ['Country',
+          result.extractedData.country], ['Document Number',
+          result.extractedData.documentNumber], ['Document Type',
+          result.extractedData.documentType], ['Optional Data 1',
+          result.extractedData.optionalData1], ['Optional Data 2',
+          result.extractedData.optionalData2], ['Raw MRZ',
+          result.extractedData.rawMrz] ]; track $index) { @if (field[1]) {
+          <ion-item>
+            <ion-label>
+              <p>{{ field[0] }}</p>
+              <h3>{{ field[1] }}</h3>
+            </ion-label>
+          </ion-item>
+          } }
+        </ion-list>
+        } @if (result.imageBase64 && activeTab === 'document') {
+        <ion-list-header><ion-label>Captured Image</ion-label></ion-list-header>
+        <img
+          [src]="'data:image/jpeg;base64,' + result.imageBase64"
+          alt="Document capture"
+          class="result-image"
+        />
+        } @if (result.classification) {
+        <ion-item lines="none">
+          <ion-label>
+            <p>Classification</p>
+            <h3>{{ result.classification }}</h3>
+          </ion-label>
+        </ion-item>
+        } @if (result.licenseExpired === true) {
+        <ion-item color="warning" lines="none">
+          <ion-icon name="warning-outline" slot="start"></ion-icon>
+          <ion-label>License has expired</ion-label>
+        </ion-item>
+        }
+        <ion-list-header>
+          <ion-label> Raw JSON </ion-label>
+        </ion-list-header>
+        <ion-textarea
+          [value]="resultJson()"
+          [autoGrow]="true"
+          readonly
+          class="result-json"
+        ></ion-textarea>
+      </ion-card-content>
+    </ion-card>
+    }
+  </ng-template>
+</ion-content>
